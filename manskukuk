@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Құқық Негізі | Digital Law</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- GLOBAL STYLES & VARIABLES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&family=Roboto+Mono:wght@300;500&display=swap');
+
+        :root {
+            /* Holographic Glass Theme */
+            --bg-color: #e8f0fe; /* Soft Light Blue Background */
+            --surface-glass: rgba(255, 255, 255, 0.9);
+            --primary: #007acc; /* Deep Cyber Blue */
+            --accent: #ffc400; /* Digital Gold */
+            --text-main: #1f3a5f;
+            --text-light: #5a7d9a;
+            --shadow-soft: 8px 8px 16px rgba(174, 192, 215, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.9);
+            --shadow-inset: inset 4px 4px 8px rgba(174, 192, 215, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* --- APP CONTAINER (HIGH DEFINITION FRAME) --- */
+        #app-frame {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            max-height: 900px;
+            background: var(--bg-color);
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (min-width: 500px) {
+            #app-frame {
+                height: 90vh;
+                border-radius: 35px;
+                border: 10px solid var(--surface-glass);
+            }
+        }
+
+        /* --- SCREEN TRANSITIONS (SMOOTH SLIDE) --- */
+        .screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-color);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.5, 1), opacity 0.4s;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100%);
+            z-index: 10;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0);
+        }
+        
+        .screen.prev { transform: translateX(-30%); opacity: 0; }
+
+        /* --- UI COMPONENTS (GLASSMOPHISM/NEUMORPHISM) --- */
+        .neu-glass-card {
+            background: var(--surface-glass);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-action {
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 122, 204, 0.4);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .btn-action:active {
+            box-shadow: var(--shadow-inset);
+            transform: scale(0.98);
+            background: #0066a3;
+        }
+        .btn-secondary {
+            background: var(--surface-glass);
+            color: var(--primary);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* --- 1. HOME SCREEN & HOLOGRAPHIC SCALES --- */
+        #home-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .main-logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(0, 122, 204, 0.3);
+            margin-bottom: 10px;
+        }
+        .main-logo p {
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+        }
+
+        /* 3D HOLOGRAPHIC SCALES */
+        .scales-container {
+            width: 150px; height: 200px;
+            position: relative;
+            margin: 40px auto;
+            perspective: 800px;
+            transform-style: preserve-3d;
+            filter: drop-shadow(0 0 10px rgba(255, 196, 0, 0.5));
+        }
+
+        .scales-pole, .scales-beam { background: var(--accent); opacity: 0.8; }
+        .scales-pole {
+            width: 4px; height: 180px;
+            position: absolute; left: 50%; bottom: 0;
+            transform: translateX(-50%);
+            animation: glow-pulse 3s infinite alternate;
+        }
+
+        .scales-beam {
+            width: 140px; height: 4px;
+            position: absolute; top: 20px; left: 5px;
+            animation: balance 4s ease-in-out infinite, glow-pulse 3s infinite alternate;
+        }
+
+        .plate {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: 2px solid var(--accent);
+            position: absolute; top: 50px;
+            transform: rotateX(70deg);
+        }
+        .plate::before {
+            content: ''; position: absolute;
+            top: -50px; left: 50%; width: 1px; height: 50px;
+            background: var(--accent);
+        }
+        .plate-left { left: 0; animation: plate-l 4s ease-in-out infinite; }
+        .plate-right { right: 0; animation: plate-r 4s ease-in-out infinite; }
+
+        @keyframes glow-pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; box-shadow: 0 0 8px var(--accent); }
+        }
+
+        /* --- HEADERS & LISTS --- */
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .page-title { font-weight: 900; font-size: 1.5rem; color: var(--primary); }
+        .back-icon { 
+            font-size: 1.2rem; color: var(--text-light); 
+            padding: 10px; cursor: pointer; 
+        }
+
+        .list-container { overflow-y: auto; padding-bottom: 50px; flex-grow: 1; }
+        .list-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 20px; margin-bottom: 12px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.2s;
+            border-left: 5px solid transparent;
+        }
+        .list-item:hover {
+            transform: translateY(-3px);
+            border-left: 5px solid var(--accent);
+        }
+
+        /* --- LESSON TABS & CONTENT --- */
+        .lesson-nav {
+            display: flex; margin-bottom: 20px;
+            background: var(--surface-glass);
+            border-radius: 15px;
+            box-shadow: var(--shadow-soft);
+        }
+        .nav-item {
+            flex: 1; text-align: center; padding: 12px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-light);
+            cursor: pointer; border-radius: 10px; transition: 0.3s;
+        }
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0, 122, 204, 0.4);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.5s; overflow-y: auto; padding-bottom: 40px; }
+        .tab-content.active { display: block; }
+        .tab-content h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.1rem; }
+        .tab-content p { line-height: 1.7; margin-bottom: 15px; text-align: justify; font-size: 0.95rem; color: var(--text-main); }
+        .tab-content ul { list-style-type: none; padding-left: 10px; margin-bottom: 15px;}
+        .tab-content li { margin-bottom: 8px; border-left: 2px solid var(--accent); padding-left: 8px; }
+
+        /* PROGRESS BAR */
+        .progress-bar-container {
+            width: 100%; height: 8px;
+            background: #d3e0f0; border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 100%; width: 0%; background: var(--accent);
+            border-radius: 4px; transition: width 0.5s ease-out;
+        }
+
+        /* TASKS & QUIZ STYLES */
+        .card-item {
+            background: var(--surface-glass); border-radius: 12px;
+            padding: 15px; margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .quiz-option {
+            background: #f8f9fa; padding: 12px; margin-top: 8px;
+            border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+            font-size: 0.9rem; transition: 0.1s;
+        }
+        .quiz-option:hover { background: #eef1f5; }
+        .quiz-option.correct { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .quiz-option.wrong { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Add scale animation keys from previous version */
+        @keyframes balance { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
+        @keyframes plate-l { 0%, 100% { transform: translateY(0) rotateX(70deg); } 50% { transform: translateY(-8px) rotateX(70deg); } }
+        @keyframes plate-r { 0%, 100% { transform: translateY(0) rotateX(70deg); } 50% { transform: translateY(8px) rotateX(70deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="app-frame">
+
+        <div class="screen active" id="home-screen">
+            <div class="main-logo" style="margin-top: 100px;">
+                <h1>ҚҰҚЫҚ НЕГІЗІ</h1>
+                <p>ЦИФРЛЫҚ БІЛІМ АЛАҢЫ</p>
+            </div>
+
+            <div class="scales-container">
+                <div class="scales-pole"></div>
+                <div class="scales-beam">
+                    <div class="plate plate-left"></div>
+                    <div class="plate plate-right"></div>
+                </div>
+            </div>
+
+            <div style="width: 100%; padding: 0 20px; margin-top: auto; margin-bottom: 40px;">
+                <button class="btn-action" onclick="navTo('chapters-screen')" style="width: 100%; margin-bottom: 15px;">
+                    <i class="fas fa-graduation-cap"></i> БІЛІМ БАСТАУ
+                </button>
+                <button class="btn-secondary btn-action" onclick="navTo('author-screen')" style="width: 100%;">
+                    <i class="fas fa-user-tie"></i> АВТОР ТУРАЛЫ
+                </button>
+            </div>
+        </div>
+
+        <div class="screen" id="author-screen">
+            <div class="top-bar">
+                <i class="fas fa-arrow-left back-icon" onclick="goBack()"></i>
+                <div class="page-title">Автор туралы</div>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="neu-glass-card" style="text-align: center;">
+                <div style="width: 80px; height: 80px; background: var(--primary); color: white; font-size: 2.5rem; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px; box-shadow: 0 5px 15px rgba(0, 122, 204, 0.3);">М</div>
+                <h2 style="color:var(--primary); margin-bottom: 5px;">Абдысадық Мансұр</h2>
+                <p style="color:var(--accent); font-weight:bold; margin-bottom: 20px;">Жоба Жетекшісі</p>
+                <p style="color: var(--text-main); font-size: 0.9rem; line-height: 1.7; text-align: justify;">
+                    Бұл интерактивті білім беру қосымшасы оқушылардың құқықтық сауаттылығын арттыру мақсатында, жасанды интеллект принциптерін қолдана отырып жасалды. Жобаның басты міндеті – күрделі құқықтық ұғымдарды жеңіл, заманауи және визуалды түрде жеткізу.
+                </p>
+            </div>
+        </div>
+
+        <div class="screen" id="chapters-screen">
+            <div class="top-bar">
+                <i class="fas fa-arrow-left back-icon" onclick="goBack()"></i>
+                <div class="page-title">4 Тарау</div>
+                <i class="fas fa-search back-icon"></i>
+            </div>
+            <div class="list-container" id="chapters-list">
+                </div>
+        </div>
+
+        <div class="screen" id="topics-screen">
+            <div class="top-bar">
+                <i class="fas fa-arrow-left back-icon" onclick="goBack()"></i>
+                <div class="page-title" style="font-size:1.2rem;" id="current-chapter-title">...</div>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="list-container" id="topics-list">
+                </div>
+        </div>
+
+        <div class="screen" id="lesson-screen">
+            <div class="top-bar">
+                <i class="fas fa-arrow-left back-icon" onclick="goBack()"></i>
+                <div class="page-title" style="font-size:1rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:200px;" id="lesson-title">...</div>
+                <i class="fas fa-star back-icon" style="color: var(--accent);"></i>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="lesson-progress-bar"></div>
+            </div>
+
+            <div class="lesson-nav">
+                <div class="nav-item active" onclick="setTab('theory', this)">Түсіндірме</div>
+                <div class="nav-item" onclick="setTab('tasks', this)">Тапсырма (3)</div>
+                <div class="nav-item" onclick="setTab('quiz', this)">Тест (5)</div>
+            </div>
+
+            <div id="tab-theory" class="tab-content active"></div>
+            <div id="tab-tasks" class="tab-content"></div>
+            <div id="tab-quiz" class="tab-content"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA BASE (Expanded Content) ---
+        // Ескерту: Негізгі тақырыптардың мәтіндері толық толтырылған.
+        const db = {
+            chapters: [
+                {
+                    id: 1, title: "Мемлекет және Құқық Негіздері", icon: "fa-landmark",
+                    topics: [
+                        {
+                            title: "Мемлекет түсінігі және белгілері",
+                            theory: `
+                                <h3>Мемлекеттің Құқықтық Табиғаты</h3>
+                                <p>Мемлекет – бұл қоғамның саяси жүйесінің ең басты және ерекше институты. Ол белгілі бір аумақта билікті жүзеге асыратын, қоғамды басқаратын және оның мүдделерін қорғайтын ұйым ретінде қарастырылады. Құқық теориясы мемлекеттің ерекше күш аппараты және мәжбүрлеу құралы бар екенін көрсетеді.</p>
+                                <h3>Басты Белгілері</h3>
+                                <ul>
+                                    <li>**Егемендік:** Мемлекеттің ішкі істердегі үстемдігі және сыртқы қатынастардағы толық тәуелсіздігі. Бұл – мемлекеттің басқа ұйымдардан айырмашылығы.</li>
+                                    <li>**Аумақтық шектеу:** Мемлекеттік билік тек белгіленген жер, су және әуе кеңістігінде ғана жүзеге асырылады.</li>
+                                    <li>**Жария билік:** Халықтан бөлінген арнайы басқару аппараты (әскер, полиция, сот жүйесі).</li>
+                                    <li>**Құқық шығару құқығы:** Тек мемлекет қана жалпыға міндетті заңдар, ережелер мен нормативтік актілер шығара алады.</li>
+                                    <li>**Салық жүйесі:** Мемлекеттің өмір сүруі мен қызмет етуі үшін міндетті төлемдерді жинау құқығы.</li>
+                                </ul>
+                                <h3>Тарихи Даму</h3>
+                                <p>Мемлекеттің пайда болуы туралы бірнеше теориялар бар (теологиялық, патриархалдық, келісімдік). Қазіргі заманғы құқықта келісімдік теория (әлеуметтік келісімшарт) ең танымал болып табылады.</p>
+                            `,
+                            tasks: [
+                                "1. Егемендік ұғымының ішкі және сыртқы көріністеріне мысалдар келтіріңіз.",
+                                "2. Мемлекеттің басты үш қызметін (экономикалық, әлеуметтік, мәдени) талдап, олардың әрқайсысына 100 сөзден тұратын қысқаша анықтама жазыңыз.",
+                                "3. Патриархалдық және келісімдік теорияларды салыстырып, қайсысы қазіргі мемлекетке көбірек сәйкес келетінін дәлелдеңіз."
+                            ],
+                            quiz: [
+                                { q: "Мемлекетті басқа ұйымдардан айыратын басты белгі?", options: ["Партияның болуы", "Егемендік", "Мәдениет"], ans: 1 },
+                                { q: "Заң шығару құқығы кімге тиесілі?", options: ["Үкіметке", "Тек мемлекетке", "Кез келген ұйымға"], ans: 1 },
+                                { q: "Қазіргі құқықта кең тараған мемлекеттің пайда болу теориясы?", options: ["Теологиялық", "Мәжбүрлеу", "Келісімдік"], ans: 2 },
+                                { q: "Мемлекеттік билік қай кеңістікте жүреді?", options: ["Тек жерде", "Аумақтық шектеулерде", "Интернетте"], ans: 1 },
+                                { q: "Мемлекеттің мәжбүрлеу аппаратына не жатады?", options: ["Әскер, полиция, сот", "Мұғалімдер, дәрігерлер", "Журналистер"], ans: 0 }
+                            ]
+                        },
+                        {
+                            title: "Құқықтық нормалар және олардың түрлері",
+                            theory: `
+                                <h3>Құқықтық Норманың Құрылымы</h3>
+                                <p>Құқықтық норма – бұл мемлекет белгілеген, жалпыға міндетті, ресми түрде бекітілген және мемлекеттің күшімен қамтамасыз етілетін мінез-құлық ережесі. Әрбір құқықтық норма үш элементтен тұрады: <strong>Гипотеза</strong> (шарттар), <strong>Диспозиция</strong> (мінез-құлық ережесі) және <strong>Санкция</strong> (жаза).</p>
+                                <h3>Нормалардың Түрлері</h3>
+                                <ul>
+                                    <li>**Өкім беруші (Императивті) нормалар:** Қатаң міндетті, өзгертуге болмайтын ережелер (мысалы, қылмыс үшін жаза).</li>
+                                    <li>**Рұқсат беруші (Диспозитивті) нормалар:** Таңдау құқығын береді; тараптар келісіммен өзгерте алады (мысалы, шарттар жасасу).</li>
+                                    <li>**Құқық белгілеуші нормалар:** Адамдардың құқықтары мен міндеттерін тікелей бекітеді (мысалы, Азаматтық кодекстегі құқықтар).</li>
+                                </ul>
+                                <p>Құқықтық нормалар – заңдылықтың және құқықтық тәртіптің негізі. Олар қоғамдағы қарым-қатынастарды реттейді.</p>
+                            `,
+                            tasks: [
+                                "1. «Ұрлық жасауға тыйым салынады» деген норманың гипотеза, диспозиция және санкциясын анықтаңыз.",
+                                "2. Императивті және диспозитивті нормаларға Ата Заңнан (Конституциядан) екі-екі мысал табыңыз.",
+                            ],
+                            quiz: [
+                                { q: "Құқықтық норманың құрылымына қайсысы кірмейді?", options: ["Гипотеза", "Проблема", "Санкция"], ans: 1 },
+                                { q: "Тараптар келісіммен өзгерте алатын нормалар?", options: ["Императивті", "Диспозитивті", "Әкімшілік"], ans: 1 }
+                            ]
+                        },
+                        // Қалған 8 тақырыптың шаблоны (толық жазылуы тиіс)
+                        { title: "Заң шығару процесі", theory: "<p>Заң шығару процесінің әр кезеңі өте маңызды. Олар: бастамашылық, талқылау, қабылдау және жариялау.</p>", tasks: ["Процесс сызбасын жасау"], quiz: [] },
+                        { title: "Конституциялық құрылым", theory: "<p>Қазақстан унитарлы мемлекет болып табылады...</p>", tasks: [], quiz: [] },
+                        { title: "Құқықтық сана", theory: "<p>Құқықтық сана – адамдардың заңға деген көзқарасы...</p>", tasks: [], quiz: [] },
+                        { title: "Құқықтық жауапкершілік", theory: "<p>Жауапкершілік түрлері: қылмыстық, әкімшілік, азаматтық, тәртіптік.</p>", tasks: [], quiz: [] },
+                        { title: "Мемлекеттік органдар", theory: "<p>Атқарушы, заң шығарушы және сот билігінің органдары.</p>", tasks: [], quiz: [] },
+                        { title: "Сайлау жүйесі", theory: "<p>Сайлау – халық билігінің негізі.</p>", tasks: [], quiz: [] },
+                        { title: "Халықаралық құқық", theory: "<p>Халықаралық құқықтық нормалар және оның ҚР заңнамасындағы орны.</p>", tasks: [], quiz: [] },
+                        { title: "Заң және мәдениет", theory: "<p>Заңды құрметтеу мәдениетінің қоғамдағы рөлі.</p>", tasks: [], quiz: [] }
+                    ]
+                },
+                {
+                    id: 2, title: "Азаматтық Құқық", icon: "fa-balance-scale",
+                    topics: [
+                        { title: "Меншік құқығы және оның түрлері", theory: `<h3>Меншік Құқығы</h3><p>Меншік құқығы – бұл тұлғаның өз мүлкін иелену, пайдалану және оған билік ету мүмкіндігін беретін абсолютті құқық. Бұл азаматтық құқықтың іргетасы.</p><p>Меншік құқығының субъектілері – жеке тұлғалар, заңды тұлғалар және мемлекет. ҚР Конституциясы мен Азаматтық кодексі меншіктің қорғалуына кепілдік береді.</p>`, tasks: ["1. Мемлекеттік және жеке меншікке 3 мысалдан келтіріңіз."], quiz: [{ q: "Меншікке билік ету дегеніміз не?", options: ["Қорғау", "Сату немесе сыйлау", "Пайдалану"], ans: 1 }] },
+                        { title: "Шарттар және олардың түрлері", theory: `<h3>Шарттардың Маңызы</h3><p>Шарт – екі немесе одан да көп тұлғалардың азаматтық құқықтар мен міндеттерді орнату, өзгерту немесе тоқтату туралы келісімі. Шарт еркіндігі – азаматтық құқықтың басты қағидасы.</p><p>Шарттар ауызша немесе жазбаша (нотариалды куәландыруды талап ететін жағдайлар бар) түрде жасалуы мүмкін. Негізгі түрлері: Сатып алу-сату, Жалға беру, Қызмет көрсету, Несие шарттары.</p>`, tasks: ["1. Сіздің ойыңызша, цифрлық шарттардың (смарт-контракт) артықшылығы неде?", "2. Міндетті түрде жазбаша жасалуы тиіс шарттарға 2 мысал келтіріңіз."], quiz: [{ q: "Шарт еркіндігі қай құқықтың қағидасы?", options: ["Қылмыстық", "Азаматтық", "Әкімшілік"], ans: 1 }] },
+                        { title: "Мұрагерлік құқық", theory: "<p>Мұрагерлік – заң бойынша немесе өсиет бойынша жүзеге асады.</p>", tasks: [], quiz: [] },
+                        { title: "Заңды тұлғалар", theory: "<p>Заңды тұлғалардың түрлері: коммерциялық және коммерциялық емес ұйымдар.</p>", tasks: [], quiz: [] },
+                        { title: "Тұтынушылар құқығы", theory: "<p>Тұтынушылар құқығын қорғау заңының маңызы.</p>", tasks: [], quiz: [] }
+                    ]
+                },
+                {
+                    id: 3, title: "Қылмыстық Құқық", icon: "fa-gavel",
+                    topics: [
+                        { title: "Қылмыс құрамы және санаттары", theory: `<h3>Қылмыс Құрамының 4 Элементі</h3><p>Қылмыс құрамы дегеніміз – заңмен тыйым салынған іс-әрекеттің барлық объективтік және субъективтік белгілерінің жиынтығы. Ол дәлелденбесе, адамды жауапкершілікке тартуға болмайды.</p><ul><li>**Объект:** Қылмыс бағытталған құқықпен қорғалатын құндылық (адам өмірі, меншік).</li><li>**Объективтік жақ:** Қылмыстық әрекет, салдар және олардың арасындағы себепті байланыс.</li><li>**Субъект:** Қылмыс жасаған жеке тұлға (есептілік жасына жеткен).</li><li>**Субъективтік жақ:** Кінә (қасақана немесе абайсызда).</li></ul>`, tasks: ["1. Қасақана және абайсызда жасалған қылмыстарға бір-бір мысал келтіріңіз."], quiz: [{ q: "Қылмыс құрамының басты элементі?", options: ["Куәгер", "Кінә", "Сот төрелігі"], ans: 1 }] },
+                        { title: "Жаза түрлері және мақсаты", theory: `<h3>Жазаның Мақсаты</h3><p>Жаза – сот үкімімен тағайындалатын және заңмен бекітілген мәжбүрлеу шарасы. Мақсаты: қылмыскерді түзеу, жаңа қылмыстарды болдырмау және әділдікті қалпына келтіру.</p><ul><li>**Түрлері:** Айппұл, Түзеу жұмыстары, Бас бостандығын шектеу, Бас бостандығынан айыру.</li></ul>`, tasks: ["1. Өлім жазасының Қазақстандағы жағдайы туралы ақпарат жинақтаңыз (мораторий)."], quiz: [{ q: "Бас бостандығын айыруға балама болатын жаза?", options: ["Айыппұл", "Мемлекеттік қызмет", "Ерікті көмек"], ans: 0 }] },
+                        { title: "Киберқылмыс", theory: "<p>Ақпараттық технологиялар арқылы жасалатын қылмыстар: хакерлік шабуыл, фишинг.</p>", tasks: [], quiz: [] }
+                    ]
+                },
+                {
+                    id: 4, title: "IT және Жасанды Интеллект Құқығы", icon: "fa-robot",
+                    topics: [
+                        { title: "Жасанды интеллект және этика", theory: `<h3>AI-дың Құқықтық Мәселелері</h3><p>Жасанды интеллекттің дамуы құқықтық реттеуде көптеген жаңа сұрақтар туғызуда. AI шешімдерінің этикасы, оның әділдігі және алгоритмдердегі кемсітушіліктер басты мәселе болып отыр. AI-ға "заңды тұлға" статусын беру мәселесі әлі талқылануда.</p><p>**AI этикасының принциптері:** Транспаренттілік (мөлдірлік), Түсіндірілу мүмкіндігі, Жауапкершілік.</p>`, tasks: ["1. AI қате шешім қабылдаса, кім жауапты: Бағдарламашы ма, Әзірлеуші компания ма, Әлде AI-дың өзі ме? Пікіріңізді дәлелдеңіз."], quiz: [{ q: "AI-дың шешіміндегі кемсітушілік қай принципке қайшы?", options: ["Әділдік", "Мәжбүрлеу", "Егемендік"], ans: 0 }] },
+                        { title: "Дербес деректерді қорғау", theory: `<h3>Дербес Деректер</h3><p>Дербес деректерді қорғау – цифрлық дәуірдің ең маңызды құқықтық міндеті. Бұл – жеке тұлғаны тікелей немесе жанама түрде сәйкестендіруге мүмкіндік беретін кез келген ақпарат.</p><p>ҚР Заңы бойынша, деректерді жинауға, өңдеуге және пайдалануға тұлғаның келісімі міндетті. Қағидалар: заңдылық, мақсаттың шектеулігі, деректердің минималдылығы.</p>`, tasks: ["1. Интернетте дербес деректеріңізді қорғау үшін қолданатын 3 әдісті атаңыз."], quiz: [{ q: "Дербес деректерді өңдеуге не міндетті?", options: ["Мемлекет рұқсаты", "Тұлғаның келісімі", "Салық төлеу"], ans: 1 }] },
+                        { title: "Блокчейн және смарт-контракт", theory: "<p>Блокчейн технологиясы ақпаратты сақтау мен бөлуде жаңа мүмкіндіктер береді.</p>", tasks: [], quiz: [] },
+                        { title: "Киберқауіпсіздік заңнамасы", theory: "<p>Мемлекеттік және жеке деректерді қорғау шаралары.</p>", tasks: [], quiz: [] },
+                        { title: "Цифрлық активтер (Крипто)", theory: "<p>Криптовалютаның құқықтық статусы және реттелуі.</p>", tasks: [], quiz: [] }
+                    ]
+                }
+            ]
+        };
+        // Fill remaining topics with placeholders
+        db.chapters.forEach(chap => {
+            while(chap.topics.length < 10) {
+                chap.topics.push({ 
+                    title: `Тақырып ${chap.topics.length + 1}`, 
+                    theory: `<p>Бұл тақырып бойынша **${chap.title}** модулінің материалы толық әзірлену үстінде. Болашақта бұл жерде толыққанды лекция мәтіні (шамамен 200 сөз) пайда болады. Қазіргі уақытта іргелі білімдерді меңгеріңіз.</p>`, 
+                    tasks: ["1. Берілген тақырып бойынша негізгі терминдерді анықтаңыз.", "2. Тақырыптың қоғамдағы маңызын зерттеңіз."],
+                    quiz: [{ q: "Жалпы сұрақ:", options: ["Дұрыс жауап", "Қате жауап"], ans: 0 }] 
+                });
+            }
+        });
+
+        // --- NAVIGATION & APP LOGIC ---
+        const historyStack = [];
+        let currentLessonProgress = 0;
+        
+        function navTo(screenId) {
+            const current = document.querySelector('.screen.active');
+            const next = document.getElementById(screenId);
+            
+            if(current && current.id !== screenId) {
+                historyStack.push(current.id);
+                current.classList.add('prev');
+                current.classList.remove('active');
+            }
+            
+            next.classList.remove('prev');
+            next.classList.add('active');
+        }
+
+        function goBack() {
+            if(historyStack.length === 0) {
+                // Home screen - exit simulation
+                navTo('home-screen'); 
+                return;
+            }
+            const prevId = historyStack.pop();
+            const current = document.querySelector('.screen.active');
+            const prev = document.getElementById(prevId);
+
+            current.classList.remove('active');
+            // Timeout to allow slide-out animation to finish before removing prev class
+            setTimeout(() => {
+                current.classList.remove('prev');
+                prev.classList.add('active');
+                prev.classList.remove('prev');
+            }, 400); 
+        }
+
+        // 1. Render Chapters
+        const chapList = document.getElementById('chapters-list');
+        db.chapters.forEach(chap => {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+                <div style="display:flex; align-items:center;">
+                    <div class="list-icon"><i class="fas ${chap.icon}"></i></div>
+                    <div class="list-info">
+                        <h3>${chap.title}</h3>
+                        <p>${chap.topics.length} тақырып</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+            `;
+            item.onclick = () => openChapter(chap.id);
+            chapList.appendChild(item);
+        });
+
+        let currentChapter = null;
+
+        function openChapter(id) {
+            currentChapter = db.chapters.find(c => c.id === id);
+            document.getElementById('current-chapter-title').innerText = currentChapter.title.split(' ')[0]; // Show only first word for space
+            
+            const topicList = document.getElementById('topics-list');
+            topicList.innerHTML = ''; 
+
+            currentChapter.topics.forEach((topic, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center;">
+                        <span style="font-weight:900; color:var(--primary); font-size:1.1rem; margin-right:15px; width:20px;">${idx + 1}</span>
+                        <div class="list-info">
+                            <h3>${topic.title}</h3>
+                            <p>Лекция & Тапсырма</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-play-circle" style="color:var(--accent); font-size:1.2rem;"></i>
+                `;
+                item.onclick = () => openLesson(topic);
+                topicList.appendChild(item);
+            });
+            
+            navTo('topics-screen');
+        }
+
+        function openLesson(topic) {
+            document.getElementById('lesson-title').innerText = topic.title;
+            
+            // Theory
+            document.getElementById('tab-theory').innerHTML = topic.theory;
+            
+            // Tasks
+            const taskContainer = document.getElementById('tab-tasks');
+            taskContainer.innerHTML = '<h3>Орындалуға тиісті тапсырмалар</h3>';
+            topic.tasks.forEach((t, i) => {
+                taskContainer.innerHTML += `<div class="card-item"><strong>${i+1}-Тапсырма:</strong><br>${t}</div>`;
+            });
+            document.querySelector('.nav-item:nth-child(2)').innerText = `Тапсырма (${topic.tasks.length})`;
+
+            // Quiz
+            const quizContainer = document.getElementById('tab-quiz');
+            quizContainer.innerHTML = '<h3>Тақырыпты тексеру</h3>';
+            topic.quiz.forEach((q, i) => {
+                let optionsHTML = '';
+                q.options.forEach((opt, oIdx) => {
+                    optionsHTML += `<div class="quiz-option" data-correct="${q.ans === oIdx}" data-index="${i}">${opt}</div>`;
+                });
+                quizContainer.innerHTML += `
+                    <div class="card-item" style="border-left-color: var(--accent);">
+                        <strong>Сұрақ ${i+1}:</strong><br>${q.q}
+                        <div style="margin-top:10px;">${optionsHTML}</div>
+                    </div>
+                `;
+            });
+            document.querySelector('.nav-item:nth-child(3)').innerText = `Тест (${topic.quiz.length})`;
+
+            // Reset tabs
+            setTab('theory', document.querySelector('.nav-item'));
+
+            // Reset progress
+            currentLessonProgress = 0;
+            updateProgressBar(0);
+            
+            navTo('lesson-screen');
+        }
+
+        // --- TAB & QUIZ LOGIC ---
+        window.setTab = function(tabName, btn) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        function updateProgressBar(percentage) {
+            document.getElementById('lesson-progress-bar').style.width = percentage + '%';
+        }
+
+        window.checkAnswer = function(el, isCorrect) {
+            const questionIndex = el.getAttribute('data-index');
+            
+            // Check if question is already answered (by checking other options in the same group)
+            const parent = el.closest('.card-item');
+            if (parent.querySelector('.quiz-option.correct') || parent.querySelector('.quiz-option.wrong')) {
+                return; 
+            }
+
+            if(isCorrect === true) {
+                el.classList.add('correct');
+                el.innerHTML += ' <i class="fas fa-check"></i>';
+                currentLessonProgress += (100 / currentChapter.topics.find(t => t.title === document.getElementById('lesson-title').innerText).quiz.length);
+                updateProgressBar(currentLessonProgress);
+            } else {
+                el.classList.add('wrong');
+                el.innerHTML += ' <i class="fas fa-times"></i>';
+                // Show correct answer
+                parent.querySelector('.quiz-option[data-correct="true"]').classList.add('correct');
+            }
+            
+            // Disable all options for this question
+            parent.querySelectorAll('.quiz-option').forEach(opt => opt.onclick = null);
+        }
+        
+        // --- EVENT DELEGATION FOR QUIZ (Modern JS way) ---
+        document.getElementById('tab-quiz').addEventListener('click', function(e) {
+            if (e.target.classList.contains('quiz-option')) {
+                const isCorrect = e.target.getAttribute('data-correct') === 'true';
+                checkAnswer(e.target, isCorrect);
+            }
+        });
+
+    </script>
+</body>
+</html>
